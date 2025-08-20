@@ -2,10 +2,10 @@
 
 import { ReactNode, useState } from "react";
 import { Inter } from "next/font/google";
-import Slieder from "./component/layout/Slie/page";
-import Navpage from "./component/navpage/page";
+import Slieder from "@/app/component/Sidebar";
+import Navpage from "@/app/component/navpage";
 import "./globals.css";
-import SliederEX from "./component/layout/Slie/Test";
+//import SliederEX from "./component/layout/Slie/Test";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -76,7 +76,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                 data-slot="sidebar-trigger"
                 className=""
                 data-sidebar="trigger"
-                fdprocessedid="b7rov4"
+                {...({
+                  fdprocessedid: "b7rov4",
+                } as React.HTMLAttributes<HTMLButtonElement>)}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -111,13 +113,14 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           </div>
           <main className="w-full p-4 bg-white">{children}</main>
 
-          {/* Optional bottom menu */}
+          {/* Optional bottom menu 
           <div className="fixed bottom-0 w-full flex justify-around p-2 bg-gray-100 border-t md:hidden">
             <img src="/nav/home.png" className="w-6 h-6" />
             <img src="/nav/search.png" className="w-6 h-6" />
             <img src="/nav/bellD.png" className="w-6 h-6" />
             <img src="/nav/user.png" className="w-6 h-6" />
           </div>
+          */}
         </div>
       </body>
     </html>

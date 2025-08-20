@@ -20,8 +20,23 @@ ChartJS.register(
   Legend
 );
 
+// Type สำหรับ order แต่ละตัว
+interface Order {
+  order_date: string;
+  revenue: number;
+  total_sale: number;
+}
+
+// Type สำหรับ grouped data
+interface GroupedData {
+  [label: string]: {
+    revenue: number;
+    total_sale: number;
+  };
+}
+
 // Mock data
-const mockOrdersData = [
+const mockOrdersData: Order[] = [
   { order_date: "2025-08-01", revenue: 1200, total_sale: 10 },
   { order_date: "2025-08-02", revenue: 1500, total_sale: 8 },
   { order_date: "2025-08-03", revenue: 700, total_sale: 4 },
@@ -44,24 +59,28 @@ const mockOrdersData = [
 ];
 
 export default function BarChartComponent() {
-  const [ordersData, setOrdersData] = useState([]);
-  const [timePeriod, setTimePeriod] = useState("week"); // Default: week
+  const [ordersData, setOrdersData] = useState<Order[]>([]);
+  const [timePeriod, setTimePeriod] = useState<"week" | "month" | "year">(
+    "week"
+  );
 
   useEffect(() => {
     setOrdersData(mockOrdersData);
   }, []);
 
-  const groupByTimePeriod = (orders, period) => {
-    const groupedData = {};
+  const groupByTimePeriod = (
+    orders: Order[],
+    period: "week" | "month" | "year"
+  ): GroupedData => {
+    const groupedData: GroupedData = {};
 
     orders.forEach((order) => {
       const orderDate = new Date(order.order_date);
-      let label;
+      let label: string;
 
       if (period === "week") {
         const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-        const dayIndex = orderDate.getDay();
-        label = daysOfWeek[dayIndex];
+        label = daysOfWeek[orderDate.getDay()];
       } else if (period === "month") {
         const monthNames = [
           "Jan",
@@ -78,14 +97,8 @@ export default function BarChartComponent() {
           "Dec",
         ];
         label = monthNames[orderDate.getMonth()];
-      } else if (period === "year") {
-        const years = [2021, 2022, 2023, 2024, 2025];
-        label = orderDate.getFullYear();
-        years.forEach((y) => {
-          if (!groupedData[y]) {
-            groupedData[y] = { revenue: 0, total_sale: 0 };
-          }
-        });
+      } else {
+        label = orderDate.getFullYear().toString();
       }
 
       if (!groupedData[label]) {
@@ -95,15 +108,12 @@ export default function BarChartComponent() {
       groupedData[label].total_sale += order.total_sale;
     });
 
+    // สำหรับ week ให้เรียงลำดับวัน
     if (period === "week") {
-      const orderedData = {};
+      const orderedData: GroupedData = {};
       const daysOrder = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
       daysOrder.forEach((day) => {
-        if (groupedData[day]) {
-          orderedData[day] = groupedData[day];
-        } else {
-          orderedData[day] = { revenue: 0, total_sale: 0 };
-        }
+        orderedData[day] = groupedData[day] || { revenue: 0, total_sale: 0 };
       });
       return orderedData;
     }
@@ -141,16 +151,13 @@ export default function BarChartComponent() {
         title: { display: false },
         min: 0,
         max: 10000,
-        ticks: {
-          stepSize: 2500,
-        },
+        ticks: { stepSize: 2500 },
       },
     },
   };
 
   return (
     <div className="bg-white rounded-lg shadow-md mt-3 p-4">
-      {/* ส่วนหัวและ select */}
       <div className="flex justify-between items-center mb-2">
         <div>
           <p className="text-gray-400 text-xl">Revenue</p>
@@ -169,12 +176,13 @@ export default function BarChartComponent() {
           </div>
         </div>
 
-        {/* select box ชิดขวา */}
         <div>
           <select
             className="px-4 py-1 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold text-gray-700"
             value={timePeriod}
-            onChange={(e) => setTimePeriod(e.target.value)}
+            onChange={(e) =>
+              setTimePeriod(e.target.value as "week" | "month" | "year")
+            }
           >
             <option value="week">Week</option>
             <option value="month">Month</option>
@@ -183,7 +191,6 @@ export default function BarChartComponent() {
         </div>
       </div>
 
-      {/* แผนภูมิ */}
       <div className="w-full h-[15rem] mt-4 p-4 bg-white rounded-lg shadow-lg">
         <Bar data={data} options={options} />
       </div>

@@ -1,8 +1,15 @@
 "use client";
 import { useEffect, useState } from "react";
 
+// Type ของ Product
+interface Product {
+  product_name: string;
+  total_sales: number;
+  total_quantity: number;
+}
+
 // Mock data สำหรับ Top_products
-const mockTopSellingProducts = [
+const mockTopSellingProducts: Product[] = [
   {
     product_name: "Smartphone X1",
     total_sales: 25000,
@@ -11,7 +18,7 @@ const mockTopSellingProducts = [
 ];
 
 export default function Top_products() {
-  const [topSellingProducts, setTopSellingProducts] = useState([]);
+  const [topSellingProducts, setTopSellingProducts] = useState<Product[]>([]);
 
   useEffect(() => {
     // ใช้ mock data แทนการเรียก API
@@ -41,7 +48,7 @@ export default function Top_products() {
               </td>
               <td className="p-2 text-gray-800">Order {index + 1}</td>
               <td className="p-2 text-green-600 font-semibold">
-                {product.total_sales}
+                ${product.total_sales.toLocaleString()}
               </td>
               <td className="p-2 text-gray-500">N/A</td>
               <td className="p-2 text-blue-600 font-semibold">
